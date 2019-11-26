@@ -7,7 +7,9 @@ import {
   Select,
   Input,
   Segment,
-  Button
+  Button,
+  Table,
+  Popup
 } from "semantic-ui-react";
 import { allCodes, conversionConfig } from "../actions/rates";
 import { connect } from "react-redux";
@@ -152,44 +154,56 @@ export class Conversion extends Component {
     } = this.state;
 
     return (
-      <Container>
-        <Card color="violet">
-          <Card.Content>
-            <Form size="large">
-              <Form.Group widths="equal">
-                <Form.Input
-                  fluid
-                  value={fromCodeValue}
-                  onChange={this.calculateToValue}
-                />
-                <Form.Select
-                  fluid
-                  options={fromLanguageOptions}
-                  onChange={this.onFirstChange}
-                  value={fromCode}
-                />
-              </Form.Group>
-              <Form.Group widths="equal">
-                <Form.Input
-                  fluid
-                  value={toCodeValue}
-                  onChange={this.calculateFromValue}
-                />
-
-                <Form.Select
-                  fluid
-                  value={toCode}
-                  options={toLanguageOptions}
-                  onChange={this.onSecondChange}
-                />
-              </Form.Group>
-              <Button onClick={this.swapCodes} icon color="violet">
-                <Icon rotated="clockwise" name="exchange" />
-              </Button>
-            </Form>
-          </Card.Content>
-        </Card>
-      </Container>
+      <Table basic="very" size="large">
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell width={5}>
+              <Form.Input
+                fluid
+                value={fromCodeValue}
+                onChange={this.calculateToValue}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Select
+                fluid
+                options={fromLanguageOptions}
+                onChange={this.onFirstChange}
+                value={fromCode}
+              />
+            </Table.Cell>
+            <Table.Cell rowSpan="2" verticalAlign="middle">
+              <Popup
+                trigger={
+                  <Button circular onClick={this.swapCodes} icon color="violet">
+                    <Icon rotated="clockwise" name="exchange" />
+                  </Button>
+                }
+                content="Swap Currencies"
+                position="right center"
+                inverted
+              ></Popup>
+            </Table.Cell>
+          </Table.Row>
+          <Table.Row>
+            <Table.Cell width={5}>
+              <Form.Input
+                fluid
+                value={toCodeValue}
+                onChange={this.calculateFromValue}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Select
+                fluid
+                value={toCode}
+                options={toLanguageOptions}
+                onChange={this.onSecondChange}
+              />
+            </Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table>
     );
   }
 }

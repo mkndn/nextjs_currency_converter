@@ -8,8 +8,9 @@ import {
   GET_RATES_BY_BASE
 } from "../actions/types";
 import { createMessage, triggerError } from "./messages";
+import configs from "../config";
 
-const API_BASE_URI = "http://localhost:8080";
+const API_BASE_URI = configs.api;
 
 //GET LATEST RATES
 export const latestRates = () => dispatch => {
