@@ -155,7 +155,7 @@ export class Conversion extends Component {
       <Container>
         <Card color="violet">
           <Card.Content>
-            <Form>
+            <Form size="large">
               <Form.Group widths="equal">
                 <Form.Input
                   fluid

@@ -29,7 +29,7 @@ class Home extends Component {
   render() {
     const { activeIndex } = this.state;
     return (
-      <Container>
+      <Container text>
         <Header as="h2" icon textAlign="center">
           <Icon circular color="violet" inverted name="currency" />
           Currency Converter

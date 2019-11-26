@@ -6,12 +6,16 @@ import {
     Accordion,
     Segment,
     Table,
-    Dropdown
+    Dropdown,
+    Dimmer,
+    Loader,
+    Pagination
 } from "semantic-ui-react";
 import { latestRates, allCodes, latestRatesByBase } from "../actions/rates";
 import { connect } from "react-redux";
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
+import sortBy from 'lodash/sortBy'
 
 export class Rates extends Component {
 
@@ -24,22 +28,33 @@ export class Rates extends Component {
     };
 
     state = {
-        languageOptions: []
+        languageOptions: [],
+        paginationProps: {
+            page: 2,
+            boundaryRange: 1,
+            defaultActivePage: 1,
+            siblingRange: 1,
+            totalPages: 10,
+            itemsPerPage: 10,
+            items: []
+        }
     }
 
-    componentDidMount() {
+    componentDidMount = () => {
         this.props.latestRates();
         this.props.allCodes();
         this.syncLanguageOptions();
+        this.initPaginationProps();
     }
 
     componentDidUpdate(props) {
         if (this.props.currentRate !== props.currentRate) {
             this.syncLanguageOptions();
+            this.initPaginationProps();
         }
     }
 
-    syncLanguageOptions() {
+    syncLanguageOptions = () => {
         this.state.languageOptions = [];
 
         if (this.props.currentRate && this.props.codes) {
@@ -51,14 +66,41 @@ export class Rates extends Component {
         }
     }
 
+    initPaginationProps = () => {
+        const { paginationProps } = this.state;
+        const { currentRate } = this.props;
+
+        paginationProps.items = [];
+
+        if (currentRate && currentRate.rates) {
+            paginationProps.items = currentRate.rates.rateList.slice();
+            const pageCount = currentRate.rates.rateList.length / paginationProps.itemsPerPage;
+            paginationProps.totalPages = (parseInt(pageCount) < pageCount) ?
+                parseInt(pageCount) + 1 : parseInt(pageCount)
+            paginationProps.items = paginationProps.items.slice(
+                (paginationProps.page - 1) * paginationProps.itemsPerPage,
+                (paginationProps.page - 1) * paginationProps.itemsPerPage + paginationProps.itemsPerPage
+            );
+
+            sortBy(paginationProps.items, 'currencyCode')
+
+            //this.setState(paginationProps, paginationProps);
+        }
+    }
+
     getRatesByBase = (event, data) => {
         this.props.latestRatesByBase(data.value);
     }
 
+    handlePagination = (event, data) => {
+        this.setState({ page: data.activePage });
+    }
+
     render() {
 
+        const { boundaryRange, defaultActivePage, siblingRange, totalPages, items } = this.state.paginationProps
         return (
-            <Container>
+            <Container text>
                 <Dropdown
                     button
                     className='icon'
@@ -70,7 +112,7 @@ export class Rates extends Component {
                     text={this.props.currentRate.base}
                     onChange={this.getRatesByBase}
                 />
-                <Table collapsing color="blue" key="blue">
+                <Table celled collapsing color="blue" key="blue">
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Currency Code</Table.HeaderCell>
@@ -79,15 +121,31 @@ export class Rates extends Component {
                     </Table.Header>
 
                     <Table.Body>
-                        {this.props.currentRate && this.props.currentRate.rates ? this.props.currentRate.rates.rateList.map((rate, index) =>
+                        {items ? items.map((rate, index) =>
                             < Table.Row key={index}>
                                 <Table.Cell>{rate.currencyCode}</Table.Cell>
                                 <Table.Cell>{rate.currencyValue}</Table.Cell>
                             </Table.Row>
                         ) : < Table.Row>
-                                <Table.Cell>Loading...</Table.Cell>
+                                <Table.Cell><Dimmer active inverted>
+                                    <Loader inverted>Loading</Loader>
+                                </Dimmer></Table.Cell>
                             </Table.Row>}
                     </Table.Body>
+                    <Table.Footer fullWidth>
+                        <Table.Row>
+                            <Table.HeaderCell colSpan='2'>
+                                <Pagination
+                                    boundaryRange={boundaryRange}
+                                    defaultActivePage={defaultActivePage}
+                                    firstItem={null}
+                                    lastItem={null}
+                                    siblingRange={siblingRange}
+                                    totalPages={totalPages}
+                                    onPageChange={this.handlePagination}
+                                />
+                            </Table.HeaderCell>
+                        </Table.Row></Table.Footer>
                 </Table>
             </Container>
         )
