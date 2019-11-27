@@ -28,6 +28,7 @@ Support graphical depiction of how a currency has performed over a period of tim
 Multiple themes and improved animations
 Improved Server monitoring and metrics using Spring boot acutator on server side
 Deploying on a custom server _(nginx or nodejs)_
+Converter calculation is currently process on the front end server. This is to avoid server calls for each key press. A mechanism to refresh data at a regular interval _(say, every 1 hour)_ need to implemented.
 
 # Heroku
 This project has been hosted on heroku and can be accessed from [here](https://currency-converter-ui.herokuapp.com)
