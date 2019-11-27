@@ -9,12 +9,14 @@ import {
   Segment,
   Button,
   Table,
-  Popup
+  Popup,
+  Label
 } from "semantic-ui-react";
 import { allCodes, conversionConfig } from "../actions/rates";
 import { connect } from "react-redux";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { IntlProvider, FormattedNumber } from "react-intl";
 
 export class Conversion extends Component {
   static propTypes = {
@@ -31,6 +33,7 @@ export class Conversion extends Component {
     toCode: "EUR",
     fromCodeValue: 1,
     toCodeValue: 0.0,
+    formattedCodeValue: null,
     rateConfig: {},
     inverseRateConfig: {}
   };
@@ -95,19 +98,24 @@ export class Conversion extends Component {
       }
     });
 
-    this.state.toCodeValue =
-      this.state.fromCodeValue * this.state.rateConfig.toValue;
+    this.state.toCodeValue = parseFloat(
+      this.state.fromCodeValue * this.state.rateConfig.toValue
+    ).toFixed(3);
 
     this.setState(this.state);
   }
 
   calculateToValue = (e, data) => {
-    const toValue = data.value * this.state.rateConfig.toValue;
+    const toValue = parseFloat(
+      data.value * this.state.rateConfig.toValue
+    ).toFixed(3);
     this.setState({ fromCodeValue: data.value, toCodeValue: toValue });
   };
 
   calculateFromValue = (e, data) => {
-    const fromValue = data.value * this.state.inverseRateConfig.toValue;
+    const fromValue = parseFloat(
+      data.value * this.state.inverseRateConfig.toValue
+    ).toFixed(3);
     this.setState({ fromCodeValue: fromValue, toCodeValue: data.value });
   };
 
@@ -158,14 +166,26 @@ export class Conversion extends Component {
         <Table.Body>
           <Table.Row>
             <Table.Cell width={5}>
-              <Form.Input
+              <Input
                 fluid
+                label={
+                  <Label basic color="violet">
+                    <IntlProvider locale="en">
+                      <FormattedNumber
+                        value={fromCodeValue}
+                        style="currency"
+                        currency={fromCode}
+                      />
+                    </IntlProvider>
+                  </Label>
+                }
+                labelPosition="right"
                 value={fromCodeValue}
                 onChange={this.calculateToValue}
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Select
+              <Select
                 fluid
                 options={fromLanguageOptions}
                 onChange={this.onFirstChange}
@@ -187,14 +207,26 @@ export class Conversion extends Component {
           </Table.Row>
           <Table.Row>
             <Table.Cell width={5}>
-              <Form.Input
+              <Input
                 fluid
+                label={
+                  <Label basic size="small" color="violet">
+                    <IntlProvider locale="en">
+                      <FormattedNumber
+                        value={toCodeValue}
+                        style="currency"
+                        currency={toCode}
+                      />
+                    </IntlProvider>
+                  </Label>
+                }
+                labelPosition="right"
                 value={toCodeValue}
                 onChange={this.calculateFromValue}
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Select
+              <Select
                 fluid
                 value={toCode}
                 options={toLanguageOptions}
