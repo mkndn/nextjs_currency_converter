@@ -3,6 +3,7 @@ This project serves the frontend UI of the currency converter spring application
 
 # features
 This app currently offers browsing & comparing currency rates. It also provides a tool to convert currency values between multiple currencies.
+Currencies are formatted using [Intl.NumberFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat)
 
 # Techinical Stack
 This project has been designed using,
